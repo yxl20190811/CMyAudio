@@ -7,7 +7,7 @@
 int main()
 {
     CYyAudioRecorder rec;
-    rec.startRecording(16000, paInt16,1);
+    rec.startRecording(16000, paInt32,1);
     rec.process();
     std::cout << "Hello World!\n";
 }

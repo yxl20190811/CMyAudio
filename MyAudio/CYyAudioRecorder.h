@@ -6,7 +6,7 @@
 class CYyAudioRecorder : public CAudioRecorder
 {
 public:
-	CYyAudioRecorder(unsigned int BuffSize = 1024 * 1024 * 10);
+	CYyAudioRecorder(unsigned int BuffSize = 16000*100);
 	void process();
 protected:
 	TRingBuf m_ring;
