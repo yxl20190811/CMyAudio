@@ -73,36 +73,3 @@ void TRingBuf::pop(char* buf, unsigned int len) {
 		len -= size;
 	}
 }
-void TRingBuf::copy(char* buf, unsigned int len, unsigned int offset) {
-	if (0 == len) {
-		return;
-	}
-	while (true) {
-		if (m_readPos+offset == m_writePos) {
-			Sleep(30);
-			continue;
-		}
-		unsigned int size = 0;
-		if (m_readPos + offset > m_writePos) {
-			size = m_BufSize - offset - m_readPos;
-		}
-		else {
-			size = m_writePos - offset- m_readPos;
-		}
-		if (size > len) {
-			size = len;
-		}
-		size = m_writePos - offset - m_readPos;
-		memcpy(buf, m_buf + + offset, size);
-
-		if (size == len) {
-			return;
-		}
-		offset += size;
-		if (offset >= m_BufSize) {
-			offset = 0;
-		}
-		buf += size;
-		len -= size;
-	}
-}

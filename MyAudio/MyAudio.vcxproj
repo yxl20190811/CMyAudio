@@ -139,14 +139,14 @@
     <ClCompile Include="..\vad\vad_sp.c" />
     <ClCompile Include="..\vad\webrtc_vad.c" />
     <ClCompile Include="CAudioRecorder.cpp" />
-    <ClCompile Include="CYyAudioRecorder.cpp" />
+    <ClCompile Include="CAudioRecorderWithVad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TRingBuf.cpp" />
     <ClCompile Include="TWebRtcVad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CAudioRecorder.h" />
-    <ClInclude Include="CYyAudioRecorder.h" />
+    <ClInclude Include="CAudioRecorderWithVad.h" />
     <ClInclude Include="TRingBuf.h" />
     <ClInclude Include="TWebRtcVad.h" />
   </ItemGroup>

@@ -31,14 +31,14 @@ bool CAudioRecorder::startRecording(
     switch (sampleFormat) {
     case paFloat32:
     case paInt32:
-        m_SizePerFrame = 4;
+        m_SizePerFrame = 4 * channelCount;
         break;
     case paInt16:
-        m_SizePerFrame = 2;
+        m_SizePerFrame = 2 * channelCount;
         break;
     case paInt8:
     case paUInt8:
-        m_SizePerFrame =1;
+        m_SizePerFrame =1 * channelCount;
         break;
     default:
         abort();

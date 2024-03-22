@@ -9,9 +9,9 @@ public:
     CAudioRecorder();
     ~CAudioRecorder();
     bool startRecording(
-        unsigned int sampleRate = 16000, 
-        PaSampleFormat sampleFormat = paFloat32,
-        unsigned int channelCount = 1);
+        unsigned int sampleRate, 
+        PaSampleFormat sampleFormat,
+        unsigned int channelCount);
     bool stopRecording();
 protected:
     unsigned int m_sampleRate;
