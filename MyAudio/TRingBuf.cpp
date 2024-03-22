@@ -78,21 +78,22 @@ void TRingBuf::copy(char* buf, unsigned int len, unsigned int offset) {
 		return;
 	}
 	while (true) {
-		if (offset == m_writePos) {
+		if (m_readPos+offset == m_writePos) {
 			Sleep(30);
 			continue;
 		}
 		unsigned int size = 0;
-		if (offset > m_writePos) {
-			size = m_BufSize - offset;
+		if (m_readPos + offset > m_writePos) {
+			size = m_BufSize - offset - m_readPos;
 		}
 		else {
-			size = m_writePos - offset;
+			size = m_writePos - offset- m_readPos;
 		}
 		if (size > len) {
 			size = len;
 		}
-		memcpy(buf, m_buf + offset, size);
+		size = m_writePos - offset - m_readPos;
+		memcpy(buf, m_buf + + offset, size);
 
 		if (size == len) {
 			return;
