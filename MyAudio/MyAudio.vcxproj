@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../vad/include;../portaudio/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../rapidjson;../easywsclient;../vad/include;../portaudio/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\easywsclient\easywsclient.cpp" />
     <ClCompile Include="..\vad\signal_processing_library.c" />
     <ClCompile Include="..\vad\vad.cc" />
     <ClCompile Include="..\vad\vad_core.c" />
@@ -141,12 +142,17 @@
     <ClCompile Include="CAudioRecorder.cpp" />
     <ClCompile Include="CAudioRecorderWithVad.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TAudioRec2Baidu.cpp" />
+    <ClCompile Include="TBaiduAudio.cpp" />
     <ClCompile Include="TRingBuf.cpp" />
     <ClCompile Include="TWebRtcVad.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\easywsclient\easywsclient.hpp" />
     <ClInclude Include="CAudioRecorder.h" />
     <ClInclude Include="CAudioRecorderWithVad.h" />
+    <ClInclude Include="TAudioRec2Baidu.h" />
+    <ClInclude Include="TBaiduAudio.h" />
     <ClInclude Include="TRingBuf.h" />
     <ClInclude Include="TWebRtcVad.h" />
   </ItemGroup>

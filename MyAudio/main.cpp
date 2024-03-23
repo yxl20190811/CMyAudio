@@ -4,11 +4,13 @@
 #include <iostream>
 #include "CAudioRecorderWithVad.h"
 #include <Windows.h>
+#include "TAudioRec2Baidu.h"
+
 
 int main()
 {
-    CAudioRecorderWithVad rec;
-    rec.startRecording(16000, paInt32,1);
+    TAudioRec2Baidu rec;
+    rec.start(16000, paInt16,1);
     Sleep(1000 * 3600 * 24);
     std::cout << "Hello World!\n";
 }

@@ -12,8 +12,12 @@ int CAudioRecorderWithVad::OnRecordCallback(const void* inputBuffer, void* outpu
 	const PaStreamCallbackTimeInfo* timeInfo,
 	PaStreamCallbackFlags statusFlags) {
 	
-	m_ring.push((char*)inputBuffer, 
-		framesPerBuffer * m_channelCount* m_SizePerFrame);
+	std::string str1;
+	str1.resize(framesPerBuffer * m_channelCount * m_SizePerFrame);
+	memcpy((char*)str1.c_str(), inputBuffer, framesPerBuffer * m_channelCount * m_SizePerFrame);
+	OnData(str1);
+	
+	//m_ring.push((char*)inputBuffer, framesPerBuffer * m_channelCount* m_SizePerFrame);
 		
 	return paContinue;
 }
@@ -31,27 +35,33 @@ void  CAudioRecorderWithVad::process() {
 	int  ms = 30;
 	int  frameCount = m_sampleRate * ms / 1000;
 	int BlockSize = frameCount * m_SizePerFrame;
-	char* buf = (char*)malloc(BlockSize+100);
-	
+	std::string str;
+	str.resize(BlockSize + 100);
+	char* buf = (char*)(str.c_str());
+
 	int ms1 = 1000;
 	int BlockSize1 = m_sampleRate * ms1 / 1000 * m_SizePerFrame;
-	char* buf1 = (char*)malloc(BlockSize1+100);
-	char  buf1Pos = 0;
+	std::string str1;
+	str1.resize(BlockSize1+100);
+	char* buf1 = (char*)str1.c_str();
+	int  buf1Pos = 0;
 	while (true) {
-		m_ring.pop((char*)buf, BlockSize);
+		m_ring.pop(buf, BlockSize);
 		int state = m_vad.check((int16_t*)buf, m_sampleRate, 480);
 		if (1 == state) {
-			memcpy(buf1+ buf1Pos, buf, BlockSize);
+			memcpy((char*)buf1 + buf1Pos, buf, BlockSize);
 			buf1Pos += BlockSize;
 			if (buf1Pos + BlockSize > BlockSize1) {
-				OnData(buf1, buf1Pos);
+				str1.resize(buf1Pos);
+				OnData(str1);
 				buf1Pos = 0;
 			}
-			printf(".");
+			//printf(".");
 		}
 		else if (0 == state) {
 			if (buf1Pos > 0) {
-				OnData(buf1, buf1Pos);
+				str1.resize(buf1Pos);
+				OnData(str1);
 				buf1Pos = 0;
 			}
 			printf(" ");
@@ -62,6 +72,6 @@ void  CAudioRecorderWithVad::process() {
 	}
 }
 
-void CAudioRecorderWithVad::OnData(char* buf, int size) {
+void CAudioRecorderWithVad::OnData(std::string& str) {
 
 }

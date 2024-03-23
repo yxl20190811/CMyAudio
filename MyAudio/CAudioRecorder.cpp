@@ -78,7 +78,7 @@ void CAudioRecorder::openStream() {
     inputParameters.hostApiSpecificStreamInfo = nullptr;
 
     PaError err = Pa_OpenStream(&m_stream, &inputParameters, nullptr, 
-        m_sampleRate, 480, paClipOff,
+        m_sampleRate, m_sampleRate/1000*100, paClipOff,
         RecordCallback, this);
     if (err != paNoError) {
         std::cerr << "Error opening PortAudio stream: " << Pa_GetErrorText(err) << std::endl;

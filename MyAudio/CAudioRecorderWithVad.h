@@ -21,6 +21,6 @@ protected:
 		unsigned long framesPerBuffer,
 		const PaStreamCallbackTimeInfo* timeInfo,
 		PaStreamCallbackFlags statusFlags);
-	virtual void OnData(char* buf, int size);
+	virtual void OnData(std::string& str);
 };
 
