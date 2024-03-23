@@ -2,11 +2,12 @@
 #include "CAudioRecorder.h"
 #include "TRingBuf.h"
 #include "TWebRtcVad.h"
+#include <vector>
 
 class CAudioRecorderWithVad : public CAudioRecorder
 {
 public:
-	CAudioRecorderWithVad(unsigned int BuffSize = 16000*100);
+	CAudioRecorderWithVad(unsigned int BuffSize = 16000*4*3600);
 	bool startRecording(
 		unsigned int sampleRate,
 		PaSampleFormat sampleFormat,
@@ -21,6 +22,6 @@ protected:
 		unsigned long framesPerBuffer,
 		const PaStreamCallbackTimeInfo* timeInfo,
 		PaStreamCallbackFlags statusFlags);
-	virtual void OnData(std::string& str);
+	virtual void OnData(std::vector<uint8_t>& str);
 };
 
