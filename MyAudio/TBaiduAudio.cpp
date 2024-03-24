@@ -14,6 +14,19 @@ using easywsclient::WebSocket;
 TBaiduAudio::TBaiduAudio() {
 	m_webSocket = NULL;
     m_BaiduRetSTA = false;
+
+    DWORD count = ::GetEnvironmentVariableA("BAIDU_APP_ID", m_APP_ID, 1000);
+    if (count <= 0) {
+        ::MessageBoxA(NULL, "获取BAIDU_APP_ID失败，GetEnvironmentVariable(\"BAIDU_APP_ID\")", "错误", MB_ABORTRETRYIGNORE);
+        abort();
+    }
+    m_APP_ID[count] = 0;
+    count = ::GetEnvironmentVariableA("BAIDU_APP_KEY", m_APP_KEY, 1000);
+    if (count <= 0) {
+        ::MessageBoxA(NULL, "获取BAIDU_APP_KEY失败，GetEnvironmentVariable(\"BAIDU_APP_KEY\")", "错误", MB_ABORTRETRYIGNORE);
+        abort();
+    }
+    m_APP_KEY[count] = 0;
 }
 TBaiduAudio::~TBaiduAudio() {
 	if (NULL != m_webSocket) {
@@ -35,14 +48,21 @@ void LocalTextFromUtf8(const std::string& req, std::string& res) {
     WideCharToMultiByte(CP_ACP, NULL, wstr, -1, text, nLen2, NULL, NULL);
     text[nLen2] = 0;
 }
-
+std::string GetString(const Value& data, const char* name) {
+    if (!data.HasMember(name)) {
+        return "";
+    }
+    return data[name].GetString();
+}
 void TBaiduAudio::handle(std::string s) {
+    //printf("%s\n", s.c_str());
     Document doc;
     doc.Parse(s.c_str());
     if (!doc.IsObject()) {
         //printf("解析从OpenAi返回的JSON失败\n");
         return;
     }
+    
     if (doc.HasMember("data")) {
         const Value& data = doc["data"];
         std::string  tmp = data["status"].GetString();
@@ -52,15 +72,26 @@ void TBaiduAudio::handle(std::string s) {
         }
         else if (tmp == "TRN") {
             const Value& result = data["result"];
-            const Value& asr = result["asr"];
-            std::string ret = asr.GetString();
-            std::string res;
-            LocalTextFromUtf8(ret, res);
-            printf("%s\n", res.c_str());
+            const Value& type = result["type"];
+            
+            if (type == "MID") {
+                std::string res;
+                LocalTextFromUtf8(GetString(result, "asr"), res);
+                printf("%s\n", res.c_str());
+            }
+            else if (type == "FIN") {
+                std::string res;
+                LocalTextFromUtf8(GetString(result, "sentence"), res);
+                std::string trans = GetString(result, "sentence_trans");
+                std::string x = trans + "\n" + res;
+                printf("%s\n", x.c_str());
+            }
+            
         }
     }else{
         printf("%s\n", s.c_str());
     }
+    
 	return;
 }
 void TBaiduAudio::WebSocketPoll() {
@@ -76,10 +107,8 @@ void TBaiduAudio::WebSocketPoll() {
 	}
 }
 
-const char* APP_ID = "54565458";
-const char* APP_KEY = "i8qVpOb3YZUw97TbV7ueXB8E";
 
-void sendFirstFrame(WebSocket::pointer ws)
+void TBaiduAudio::sendFirstFrame()
 {
     Document doc;
     doc.SetObject();
@@ -88,17 +117,19 @@ void sendFirstFrame(WebSocket::pointer ws)
     doc.AddMember("to", "en", doc.GetAllocator());
     doc.AddMember("sampling_rate", 16000, doc.GetAllocator());
 
-    doc.AddMember("app_id", "54565458", doc.GetAllocator());
-    doc.AddMember("app_key", "i8qVpOb3YZUw97TbV7ueXB8E", doc.GetAllocator());
+    rapidjson::GenericStringRef<char>  appId((const char*)m_APP_ID);
+    rapidjson::GenericStringRef<char>  appKey((const char*)m_APP_KEY);
+    doc.AddMember("app_id", appId, doc.GetAllocator());
+    doc.AddMember("app_key", appKey, doc.GetAllocator());
     doc.AddMember("return_target_tts", "false", doc.GetAllocator());
     doc.AddMember("tts_speaker", "man", doc.GetAllocator());
 
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
     doc.Accept(writer);
-    ws->send(buffer.GetString());
+    ((WebSocket::pointer)m_webSocket)->send(buffer.GetString());
 }
-void SendFinalFrame(WebSocket::pointer ws)
+void TBaiduAudio::SendFinalFrame()
 {
     Document doc;
     doc.SetObject();
@@ -106,7 +137,7 @@ void SendFinalFrame(WebSocket::pointer ws)
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
     doc.Accept(writer);
-    ws->send(buffer.GetString());
+    ((WebSocket::pointer)m_webSocket)->send(buffer.GetString());
 };
 
 void TBaiduAudio::sendBinData(std::vector<uint8_t>& str) {
@@ -126,7 +157,7 @@ void TBaiduAudio::init() {
     if (NULL == m_webSocket) {
         abort();
     }
-    sendFirstFrame((WebSocket::pointer)m_webSocket);
+    sendFirstFrame();
     ::_beginthread(ThreadFun, 0, this);
     /*
     while (!m_BaiduRetSTA) {
@@ -137,5 +168,5 @@ void TBaiduAudio::init() {
 
 void TBaiduAudio::ThreadFun(void* pThis) {
     ((TBaiduAudio*)pThis)->WebSocketPoll();
-    SendFinalFrame((WebSocket::pointer)((TBaiduAudio*)pThis)->m_webSocket);
+    ((TBaiduAudio*)pThis)->SendFinalFrame();
 }

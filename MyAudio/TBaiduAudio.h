@@ -16,7 +16,11 @@ private:
 	void* m_webSocket;
 	bool m_BaiduRetSTA;
 	std::mutex m_mtx;
+	char m_APP_ID[1000];
+	char m_APP_KEY[1000];
 private:
 	static void ThreadFun(void* pThis);
+	void sendFirstFrame();
+	void SendFinalFrame();
 };
 
