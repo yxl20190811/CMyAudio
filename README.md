@@ -15,8 +15,8 @@
 为了使用百度的接口，你首先需要一个百度的账号，请按照以下步骤替换你的账号信息：
 
 ```cpp
-doc.AddMember("app_id", "xxxxxxxx", doc.GetAllocator());
-doc.AddMember("app_key", "*************************", doc.GetAllocator());
+::GetEnvironmentVariableA("BAIDU_APP_ID", m_APP_ID, 1000);
+::GetEnvironmentVariableA("BAIDU_APP_KEY", m_APP_KEY, 1000);
 ```
 
 ## 编译与运行
